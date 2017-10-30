@@ -16,10 +16,10 @@ jobs:
       - image: docker:17.09.0-ce-git
     steps:
       - checkout:
-          path: ~/nipype
+          path: /home/circleci/nipype
       - run:
           name: Prune base Dockerfile in preparation for cache check
-          working_directory: ~nipype/docker
+          working_directory: /home/circleci/nipype/docker
           command: |
             echo $(pwd)
             mkdir -p /tmp/docker
@@ -54,13 +54,13 @@ jobs:
       image: circleci/classic:201703-01
     steps:
       - checkout:
-          path: ~/nipype
+          path: /home/circleci/nipype
       - attach_workspace:
           at: /tmp
       - run:
           name: Download test data
           no_output_timeout: 20m
-          working_directory: ~/examples
+          working_directory: /home/circleci/examples
           environment:
             OSF_NIPYPE_URL: "https://files.osf.io/v1/resources/nefdp/providers/osfstorage"
             DATA_NIPYPE_TUTORIAL_URL: "${OSF_NIPYPE_URL}/57f4739cb83f6901ed94bf21"
@@ -78,7 +78,7 @@ jobs:
       - run:
           name: Build main image (latest & py36)
           no_output_timeout: 60m
-          working_directory: ~/nipype
+          working_directory: /home/circleci/nipype
           command: |
             docker build \
               --rm false \
@@ -90,7 +90,7 @@ jobs:
       - run:
           name: Build main image (py27)
           no_output_timeout: 60m
-          working_directory: ~/nipype
+          working_directory: /home/circleci/nipype
           command: |
             docker build \
               --rm=false \
