@@ -13,14 +13,15 @@ jobs:
 
   compare_base_dockerfiles:
     docker:
-      - image: alpine:3.6
+      - image: 17.09.0-ce-git
     steps:
       - checkout:
           path: ~/nipype
       - run:
           name: Prune base Dockerfile in preparation for cache check
-          working_directory: /home/circleci/nipype/docker
+          working_directory: ~nipype/docker
           command: |
+            echo $(pwd)
             mkdir -p /tmp/docker
             # Use the sha256 sum of the pruned Dockerfile as the cache key.
             ash prune_dockerfile.sh Dockerfile.base > /tmp/docker/Dockerfile.base-pruned
