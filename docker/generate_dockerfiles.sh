@@ -1,16 +1,65 @@
- #!/usr/bin/env bash
+#!/usr/bin/env bash
+#
+# Generate base and main Dockerfiles for Nipype.
 
-# kaczmarj/neurodocker:master pulled on September 13, 2017.
+set -e
+
+USAGE="usage: $(basename $0) [-h] [-b] [-m]"
+
+function Help {
+  cat <<USAGE
+Generate base and/or main Dockerfiles for Nipype.
+
+Usage:
+
+$(basename $0) [-h] [-b] [-m]
+
+Options:
+
+    -h : display this help message and exit
+    -b : generate base Dockerfile
+    -m : generate main Dockerfile
+
+USAGE
+}
+
+# No command-line options passed.
+if [ -z "$1" ]; then
+  echo "$USAGE"
+  exit 1
+fi
+
+# Get command-line options.
+# Used the antsRegistrationSyN.sh as an example.
+# https://github.com/ANTsX/ANTs/blob/master/Scripts/antsRegistrationSyN.sh
+while getopts "hbm" OPT
+do
+  case $OPT in
+    h)
+      Help
+      exit 0
+    ;;
+    b)
+      GENERATE_BASE="1"
+    ;;
+    m)
+      GENERATE_MAIN="1"
+    ;;
+    \?)
+      echo "$USAGE" >&2
+      exit 1
+    ;;
+  esac
+done
+
+
+# TODO: Change this to a versioned image.
 NEURODOCKER_IMAGE="kaczmarj/neurodocker:master"
 # neurodebian/stretch-non-free:latest pulled on September 13, 2017.
 BASE_IMAGE="neurodebian@sha256:b09c09faa34bca0ea096b9360ee5121e048594cb8e2d7744d7d546ade88a2996"
 NIPYPE_BASE_IMAGE="kaczmarj/nipype:base"
 PKG_MANAGER="apt"
-
-# Save Dockerfiles relative to this path so that this script can be run from
-# any directory. https://stackoverflow.com/a/246128/5666087
 DIR="$(dirname "$0")"
-
 
 function generate_base_dockerfile() {
   docker run --rm "$NEURODOCKER_IMAGE" generate \
@@ -20,12 +69,11 @@ function generate_base_dockerfile() {
   --afni version=latest \
   --freesurfer version=6.0.0 min=true \
   --run 'echo "cHJpbnRmICJrcnp5c3p0b2YuZ29yZ29sZXdza2lAZ21haWwuY29tXG41MTcyXG4gKkN2dW12RVYzelRmZ1xuRlM1Si8yYzFhZ2c0RVxuIiA+IC9vcHQvZnJlZXN1cmZlci9saWNlbnNlLnR4dAo=" | base64 -d | sh' \
-  --install ants apt-utils bzip2 file fsl-core fsl-mni152-templates \
+  --install ants apt-utils bzip2 convert3d file fsl-core fsl-mni152-templates \
             fusefat g++ git graphviz make ruby unzip xvfb \
   --add-to-entrypoint "source /etc/fsl/fsl.sh" \
   --env ANTSPATH='/usr/lib/ants' PATH='/usr/lib/ants:$PATH' \
-  --c3d version=1.0.0 \
-  --instruction "RUN gem install fakes3" \
+  --run "gem install fakes3" \
   --workdir /work \
   --no-check-urls > "$DIR/Dockerfile.base"
 }
@@ -45,12 +93,12 @@ function generate_main_dockerfile() {
   --env MKL_NUM_THREADS=1 OMP_NUM_THREADS=1 \
   --user neuro \
   --miniconda env_name=neuro \
-              add_to_path=true \
+              activate=true \
   --copy docker/files/run_builddocs.sh docker/files/run_examples.sh \
          docker/files/run_pytests.sh nipype/external/fsl_imglob.py /usr/bin/ \
   --copy . /src/nipype \
   --user root \
-  --run "chmod 777 -R /src/nipype" \
+  --run "chmod 777 -R /src/nipype && chmod +x run_builddocs.sh run_examples.sh run_pytests.sh fsl_imglob.py" \
   --user neuro \
   --arg PYTHON_VERSION_MAJOR=3 PYTHON_VERSION_MINOR=6 BUILD_DATE VCS_REF VERSION \
   --miniconda env_name=neuro \
@@ -67,9 +115,13 @@ function generate_main_dockerfile() {
           org.label-schema.vcs-url="https://github.com/nipy/nipype" \
           org.label-schema.version='$VERSION' \
           org.label-schema.schema-version="1.0" \
-  --no-check-urls > "$DIR/../Dockerfile"
+  --no-check-urls
 }
 
 
-generate_base_dockerfile
-generate_main_dockerfile
+if [ "$GENERATE_BASE" == 1 ]; then
+  generate_base_dockerfile > "$DIR/Dockerfile.base"
+fi
+if [ "$GENERATE_MAIN" == 1 ]; then
+  generate_main_dockerfile > "$DIR/../Dockerfile"
+fi
