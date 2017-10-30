@@ -13,23 +13,17 @@ jobs:
 
   compare_base_dockerfiles:
     docker:
-      - image: docker:17.06.2-ce-git  # shell is /bin/ash (bash not available)
+      - image: alpine:3.6
     steps:
       - checkout:
-          path: /home/circleci/nipype
+          path: ~/nipype
       - run:
           name: Prune base Dockerfile in preparation for cache check
+          working_directory: /home/circleci/nipype/docker
           command: |
             mkdir -p /tmp/docker
-
-            # Remove empty lines, comments, and the timestamp from the base
-            # Dockerfile. Use the sha256 sum of this pruned Dockerfile as the
-            # cache key.
-            sed -e '/\s*#.*$/d' \
-                -e '/^\s*$/d' \
-                -e '/generation_timestamp/d' \
-                /home/circleci/nipype/docker/Dockerfile.base \
-            > /tmp/docker/Dockerfile.base-pruned
+            # Use the sha256 sum of the pruned Dockerfile as the cache key.
+            ash prune_dockerfile.sh Dockerfile.base > /tmp/docker/Dockerfile.base-pruned
       - restore_cache:
           key: dftest-v4-master-{{ checksum "/tmp/docker/Dockerfile.base-pruned" }}
       - run:
@@ -39,11 +33,11 @@ jobs:
 
             # This directory comes from the cache.
             if [ -d /cache/base-dockerfile ]; then
-              echo 'echo Pulling base image ...' > "$GET_BASE"
-              echo 'docker pull kaczmarj/nipype:base' >> "$GET_BASE"
+              echo "echo Pulling base image ..." > "$GET_BASE"
+              echo "docker pull kaczmarj/nipype:base" >> "$GET_BASE"
             else
-              echo 'echo Building base image ...' > "$GET_BASE"
-              echo 'docker build -t kaczmarj/nipype:base - < /home/circleci/nipype/docker/Dockerfile.base' >> "$GET_BASE"
+              echo "echo Building base image ..." > "$GET_BASE"
+              echo "docker build -t kaczmarj/nipype:base - < /home/circleci/nipype/docker/Dockerfile.base" >> "$GET_BASE"
             fi
       - persist_to_workspace:
           root: /tmp
@@ -59,9 +53,22 @@ jobs:
       image: circleci/classic:201703-01
     steps:
       - checkout:
-          path: /home/circleci/nipype
+          path: ~/nipype
       - attach_workspace:
           at: /tmp
+      - run:
+          name: Download test data
+          no_output_timeout: 20m
+          working_directory: ~/examples
+          environment:
+            OSF_NIPYPE_URL: "https://files.osf.io/v1/resources/nefdp/providers/osfstorage"
+            DATA_NIPYPE_TUTORIAL_URL: "${OSF_NIPYPE_URL}/57f4739cb83f6901ed94bf21"
+            DATA_NIPYPE_FSL_COURSE: "${OSF_NIPYPE_URL}/57f472cf9ad5a101f977ecfe"
+            DATA_NIPYPE_FSL_FEEDS: "${OSF_NIPYPE_URL}/57f473066c613b01f113e7af"
+          command: |
+            curl -sSL --retry=5 --connect-timeout=15 "$DATA_NIPYPE_TUTORIAL_URL" | tar xj
+            curl -sSL --retry=5 --connect-timeout=15 "$DATA_NIPYPE_FSL_COURSE" | tar xz
+            curl -sSL --retry=5 --connect-timeout=15 "$DATA_NIPYPE_FSL_FEEDS" | tar xz
       - run:
           name: Get base image (pull or build)
           no_output_timeout: 60m
@@ -70,10 +77,10 @@ jobs:
       - run:
           name: Build main image (latest & py36)
           no_output_timeout: 60m
+          working_directory: ~/nipype
           command: |
-            cd /home/circleci/nipype
-
-            docker build --rm=false \
+            docker build \
+              --rm false \
               --tag kaczmarj/nipype:latest \
               --tag kaczmarj/nipype:py36 \
               --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
@@ -82,10 +89,10 @@ jobs:
       - run:
           name: Build main image (py27)
           no_output_timeout: 60m
+          working_directory: ~/nipype
           command: |
-            cd /home/circleci/nipype
-
-            docker build --rm=false \
+            docker build \
+              --rm=false \
               --tag kaczmarj/nipype:py27 \
               --build-arg PYTHON_VERSION_MAJOR=2 \
               --build-arg PYTHON_VERSION_MINOR=7 \
@@ -133,8 +140,18 @@ jobs:
               docker push kaczmarj/nipype:latest
               docker push kaczmarj/nipype:py36
             fi
-# TODO: write pruned Dockerfile to cache here. Make a shell script that will
-# prune Dockerfiles
+      - run:
+          name: Prune base Dockerfile to update cache
+          command: |
+            cd /home/circleci/nipype/docker
+            # Use the sha256 sum of the pruned Dockerfile as the cache key.
+            ash prune_dockerfile.sh Dockerfile.base > /tmp/docker/Dockerfile.base-pruned
+      - save_cache:
+          paths:
+            - /tmp/docker/Dockerfile.base-pruned
+          key: dftest-v4-{{ .Branch }}-{{ checksum "/tmp/docker/Dockerfile.base-pruned" }}
+          when: on_success
+
 
 workflows:
   version: 2
@@ -145,5 +162,8 @@ workflows:
           requires:
             - compare_base_dockerfiles
       - deploy:
+          filters:
+            branches:
+              only: master
           requires:
             - build_and_test

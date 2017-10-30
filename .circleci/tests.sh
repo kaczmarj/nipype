@@ -13,7 +13,7 @@ if [ "${CIRCLE_NODE_TOTAL:-}" != "4" ]; then
   exit 1
 fi
 
-# These tests are manually balanced based on previous build timings. 
+# These tests are manually balanced based on previous build timings.
 # They may need to be rebalanced in the future.
 case ${CIRCLE_NODE_INDEX} in
   0)
@@ -48,4 +48,3 @@ cp ${WORKDIR}/tests/*.xml ${CIRCLE_TEST_REPORTS}/tests/
 if [ "$exitcode" != "0" ]; then exit 1; fi
 codecov -f "coverage*.xml" -s "${WORKDIR}/tests/" -R "${HOME}/nipype/" -F unittests -e CIRCLE_NODE_INDEX
 codecov -f "smoketest*.xml" -s "${WORKDIR}/tests/" -R "${HOME}/nipype/" -F smoketests -e CIRCLE_NODE_INDEX
-
