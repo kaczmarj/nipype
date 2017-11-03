@@ -107,6 +107,8 @@ jobs:
           command: |
             mkdir -p "$WORKDIR"
             bash /home/circleci/nipype/.circleci/tests.sh
+      - store_artifacts:
+          path: /home/circleci/work/tests
       - run:
           name: Save Docker images to workspace
           no_output_timeout: 60m
