@@ -102,6 +102,7 @@ jobs:
             curl -sSL --retry 5 --connect-timeout 15 "$DATA_NIPYPE_FSL_FEEDS" | tar xz
       - run:
           name: Run tests
+          no_output_timeout: 120m
           environment:
             WORKDIR: /home/circleci/work
           command: |
