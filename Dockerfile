@@ -5,7 +5,7 @@
 # pull request on our GitHub repository:
 #     https://github.com/kaczmarj/neurodocker
 #
-# Timestamp: 2017-11-03 12:04:25
+# Timestamp: 2017-11-03 17:36:43
 
 FROM kaczmarj/nipype:base
 
@@ -70,7 +70,7 @@ COPY [".", "/src/nipype"]
 USER root
 
 # User-defined instruction
-RUN chmod 777 -R /src/nipype && chmod +x run_builddocs.sh run_examples.sh run_pytests.sh fsl_imglob.py
+RUN chmod 777 -R /src/nipype && chmod +x /usr/bin/run_builddocs.sh /usr/bin/run_examples.sh /usr/bin/run_pytests.sh /usr/bin/fsl_imglob.py
 
 USER neuro
 
@@ -167,7 +167,7 @@ RUN echo '{ \
     \n    ], \
     \n    [ \
     \n      "run", \
-    \n      "chmod 777 -R /src/nipype && chmod +x run_builddocs.sh run_examples.sh run_pytests.sh fsl_imglob.py" \
+    \n      "chmod 777 -R /src/nipype && chmod +x /usr/bin/run_builddocs.sh /usr/bin/run_examples.sh /usr/bin/run_pytests.sh /usr/bin/fsl_imglob.py" \
     \n    ], \
     \n    [ \
     \n      "user", \
@@ -206,6 +206,6 @@ RUN echo '{ \
     \n      } \
     \n    ] \
     \n  ], \
-    \n  "generation_timestamp": "2017-11-03 12:04:25", \
+    \n  "generation_timestamp": "2017-11-03 17:36:43", \
     \n  "neurodocker_version": "0.3.1-19-g8d02eb4" \
     \n}' > /neurodocker/neurodocker_specs.json

@@ -5,7 +5,7 @@
 # pull request on our GitHub repository:
 #     https://github.com/kaczmarj/neurodocker
 #
-# Timestamp: 2017-11-03 12:04:23
+# Timestamp: 2017-11-03 17:36:41
 
 FROM neurodebian@sha256:7590552afd0e7a481a33314724ae27f76ccedd05ffd7ac06ec38638872427b9b
 
@@ -216,6 +216,6 @@ RUN echo '{ \
     \n      "/work" \
     \n    ] \
     \n  ], \
-    \n  "generation_timestamp": "2017-11-03 12:04:23", \
+    \n  "generation_timestamp": "2017-11-03 17:36:41", \
     \n  "neurodocker_version": "0.3.1-19-g8d02eb4" \
     \n}' > /neurodocker/neurodocker_specs.json
