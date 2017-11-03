@@ -53,10 +53,12 @@ do
 done
 
 
-# TODO: Change this to a versioned image.
-NEURODOCKER_IMAGE="kaczmarj/neurodocker:master"
-# neurodebian/stretch-non-free:latest pulled on September 13, 2017.
-BASE_IMAGE="neurodebian@sha256:b09c09faa34bca0ea096b9360ee5121e048594cb8e2d7744d7d546ade88a2996"
+# neurodocker version 0.3.1-19-g8d02eb4
+NEURODOCKER_IMAGE="kaczmarj/neurodocker@sha256:6b5f92f413b9710b7581e62293a8f74438b14ce7e4ab1ce68db2a09f7c64375a"
+
+# neurodebian:stretch-non-free pulled on November 3, 2017
+BASE_IMAGE="neurodebian@sha256:7590552afd0e7a481a33314724ae27f76ccedd05ffd7ac06ec38638872427b9b"
+
 NIPYPE_BASE_IMAGE="kaczmarj/nipype:base"
 PKG_MANAGER="apt"
 DIR="$(dirname "$0")"
@@ -66,7 +68,7 @@ function generate_base_dockerfile() {
   --base "$BASE_IMAGE" --pkg-manager "$PKG_MANAGER" \
   --label maintainer="The nipype developers https://github.com/nipy/nipype" \
   --spm version=12 matlab_version=R2017a \
-  --afni version=latest \
+  --afni version=latest install_python2=true \
   --freesurfer version=6.0.0 min=true \
   --run 'echo "cHJpbnRmICJrcnp5c3p0b2YuZ29yZ29sZXdza2lAZ21haWwuY29tXG41MTcyXG4gKkN2dW12RVYzelRmZ1xuRlM1Si8yYzFhZ2c0RVxuIiA+IC9vcHQvZnJlZXN1cmZlci9saWNlbnNlLnR4dAo=" | base64 -d | sh' \
   --install ants apt-utils bzip2 convert3d file fsl-core fsl-mni152-templates \
