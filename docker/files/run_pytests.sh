@@ -34,4 +34,3 @@ find ${WORKDIR} -maxdepth 1 -name "crash-*" -exec mv {} ${WORKDIR}/crashfiles/ \
 
 echo "Unit tests finished with exit code ${exit_code}"
 exit ${exit_code}
-
