@@ -5,7 +5,7 @@ set -u
 
 
 TESTPATH=${1:-/src/nipype/}
-WORKDIR=${WORKDIR:-/work}
+WORKDIR=${WORK:-/work}
 PYTHON_VERSION=$( python -c "import sys; print('{}{}'.format(sys.version_info[0], sys.version_info[1]))" )
 
 # Create necessary directories
