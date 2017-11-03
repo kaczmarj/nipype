@@ -58,12 +58,19 @@ jobs:
           command: |
             echo "$CIRCLE_TAG"
             docker build \
-              --rm false \
+              --rm=false \
               --tag kaczmarj/nipype:latest \
               --tag kaczmarj/nipype:py36 \
-              --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
-              --build-arg VCS_REF=`git rev-parse --short HEAD` \
-              --build-arg VERSION=${CIRCLE_TAG} /home/circleci/nipype
+              --build-arg BUILD_DATE="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+              --build-arg VCS_REF="$(git rev-parse --short HEAD)" \
+              --build-arg VERSION="${CIRCLE_TAG}" /home/circleci/nipype
+      - run:
+          name:
+          working_directory: /home/circleci/nipype
+          command: |
+            if [ "$CIRCLE_TAG" != "" ]; then
+              sed -i -E "s/(__version__ = )'[A-Za-z0-9.-]+'/\1'$CIRCLE_TAG'/" nipype/info.py
+            fi
       - run:
           name: Build main image (py27)
           no_output_timeout: 60m
@@ -75,9 +82,9 @@ jobs:
               --tag kaczmarj/nipype:py27 \
               --build-arg PYTHON_VERSION_MAJOR=2 \
               --build-arg PYTHON_VERSION_MINOR=7 \
-              --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
-              --build-arg VCS_REF=`git rev-parse --short HEAD` \
-              --build-arg VERSION=${CIRCLE_TAG}-py27 /home/circleci/nipype
+              --build-arg BUILD_DATE="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+              --build-arg VCS_REF="$(git rev-parse --short HEAD)" \
+              --build-arg VERSION="${CIRCLE_TAG}-py27" /home/circleci/nipype
       - run:
           name: Download test data
           no_output_timeout: 20m
