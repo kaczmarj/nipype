@@ -5,7 +5,7 @@
 # pull request on our GitHub repository:
 #     https://github.com/kaczmarj/neurodocker
 #
-# Timestamp: 2017-11-03 17:36:43
+# Timestamp: 2017-11-03 22:06:12
 
 FROM kaczmarj/nipype:base
 
@@ -206,6 +206,6 @@ RUN echo '{ \
     \n      } \
     \n    ] \
     \n  ], \
-    \n  "generation_timestamp": "2017-11-03 17:36:43", \
+    \n  "generation_timestamp": "2017-11-03 22:06:12", \
     \n  "neurodocker_version": "0.3.1-19-g8d02eb4" \
     \n}' > /neurodocker/neurodocker_specs.json
