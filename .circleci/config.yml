@@ -56,18 +56,20 @@ jobs:
           no_output_timeout: 60m
           working_directory: /home/circleci/nipype
           command: |
+            echo "$CIRCLE_TAG"
             docker build \
               --rm false \
               --tag kaczmarj/nipype:latest \
               --tag kaczmarj/nipype:py36 \
               --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
               --build-arg VCS_REF=`git rev-parse --short HEAD` \
-              --build-arg VERSION=$CIRCLE_TAG .
+              --build-arg VERSION=${CIRCLE_TAG} /home/circleci/nipype
       - run:
           name: Build main image (py27)
           no_output_timeout: 60m
           working_directory: /home/circleci/nipype
           command: |
+            echo "$CIRCLE_TAG"
             docker build \
               --rm=false \
               --tag kaczmarj/nipype:py27 \
@@ -75,7 +77,7 @@ jobs:
               --build-arg PYTHON_VERSION_MINOR=7 \
               --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
               --build-arg VCS_REF=`git rev-parse --short HEAD` \
-              --build-arg VERSION=$CIRCLE_TAG-py27 .
+              --build-arg VERSION=${CIRCLE_TAG}-py27 /home/circleci/nipype
       - run:
           name: Download test data
           no_output_timeout: 20m
