@@ -103,9 +103,9 @@ jobs:
       - run:
           name: Run tests
           environment:
-            WORKDIR: /home/circleci/work
+            WORK: /home/circleci/work
           command: |
-            mkdir -p "$WORKDIR"
+            mkdir -p "$WORK"
             bash /home/circleci/nipype/.circleci/tests.sh
       - run:
           name: Save Docker images to workspace
