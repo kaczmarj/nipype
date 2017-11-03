@@ -1,13 +1,3 @@
-# Examples:
-# https://github.com/circleci/frontend/blob/master/.circleci/config.yml
-#
-# Questions
-# ---------
-# 1. Regarding the cache: what if the base Dockerfile is reverted to a previous
-#    version? The cache for that Dockerfile will exist, so it will pull the
-#    image, which is incorrect. Include a note in generate_dockerfiles.sh to
-#    increase the version of the cache.
-
 version: 2
 jobs:
 
@@ -47,8 +37,7 @@ jobs:
 
 
   build_and_test:
-    parallelism: 1
-    # Ideally, we could test inside the main docker image.
+    parallelism: 4
     machine:
       # Ubuntu 14.04 with Docker 17.03.0-ce
       image: circleci/classic:201703-01
@@ -63,7 +52,7 @@ jobs:
           command: |
             bash /tmp/docker/get_base_image.sh
       - run:
-          name: Build main image (latest & py36)
+          name: Build main image (py36)
           no_output_timeout: 60m
           working_directory: /home/circleci/nipype
           command: |
@@ -86,7 +75,7 @@ jobs:
               --build-arg PYTHON_VERSION_MINOR=7 \
               --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
               --build-arg VCS_REF=`git rev-parse --short HEAD` \
-              --build-arg VERSION=$CIRCLE_TAG-py27 /home/circleci/nipype
+              --build-arg VERSION=$CIRCLE_TAG-py27 .
       - run:
           name: Download test data
           no_output_timeout: 20m
@@ -104,9 +93,11 @@ jobs:
             curl -sSL --retry 5 --connect-timeout 15 "$DATA_NIPYPE_FSL_FEEDS" | tar xz
       - run:
           name: Run tests
+          environment:
+            WORKDIR: /home/circleci/work
           command: |
-            echo "This is node $CIRCLE_NODE_INDEX"
-            echo "No tests to run yet."
+            mkdir -p "$WORKDIR"
+            bash /home/circleci/nipype/.circleci/tests.sh
       - run:
           name: Save Docker images to workspace
           no_output_timeout: 60m
@@ -138,11 +129,9 @@ jobs:
           name: Push to DockerHub
           no_output_timeout: 60m
           command: |
-            if [ "${CIRCLE_BRANCH}" == "enh/circleci-neurodocker" ]; then
-              docker login -u $DOCKER_USER -p $DOCKER_PASS
-              docker push kaczmarj/nipype:latest
-              docker push kaczmarj/nipype:py36
-            fi
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push kaczmarj/nipype:latest
+            docker push kaczmarj/nipype:py36
       - run:
           name: Prune base Dockerfile to update cache
           command: |
@@ -167,6 +156,6 @@ workflows:
       - deploy:
           filters:
             branches:
-              only: master
+              only: enh/circleci-neurodocker-personal
           requires:
             - build_and_test
