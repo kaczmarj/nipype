@@ -5,7 +5,7 @@
 # pull request on our GitHub repository:
 #     https://github.com/kaczmarj/neurodocker
 #
-# Timestamp: 2017-11-03 23:59:36
+# Timestamp: 2017-11-05 22:48:08
 
 FROM kaczmarj/nipype:base
 
@@ -70,10 +70,12 @@ COPY [".", "/src/nipype"]
 USER root
 
 # User-defined instruction
-RUN chmod 777 -R /src/nipype && chmod +x /usr/bin/run_builddocs.sh /usr/bin/run_examples.sh /usr/bin/run_pytests.sh /usr/bin/fsl_imglob.py
-
-# User-defined instruction
-RUN mkdir /work && chown -R neuro /work
+RUN chown -R neuro /src/nipype \
+             && chmod +x /usr/bin/fsl_imglob.py /usr/bin/run_*.sh \
+             && . /etc/fsl/fsl.sh \
+             && ln -sf /usr/bin/fsl_imglob.py /bin/imglob \
+             && mkdir /work \
+             && chown neuro /work
 
 USER neuro
 
@@ -102,6 +104,14 @@ RUN conda install -y -q --name neuro python=${PYTHON_VERSION_MAJOR}.${PYTHON_VER
     && /bin/bash -c "source activate neuro \
       && pip install -q --no-cache-dir -e /src/nipype[all]" \
     && sync
+
+# User-defined instruction
+RUN mkdir -p /src/pybids \
+             && curl -sSL --retry 5 https://github.com/INCF/pybids/tarball/master \
+             | tar -xz -C /src/pybids --strip-components 1 \
+             && pip install --no-cache-dir -e /src/pybids
+
+WORKDIR /work
 
 LABEL org.label-schema.build-date="$BUILD_DATE" \
       org.label-schema.name="NIPYPE" \
@@ -170,11 +180,7 @@ RUN echo '{ \
     \n    ], \
     \n    [ \
     \n      "run", \
-    \n      "chmod 777 -R /src/nipype && chmod +x /usr/bin/run_builddocs.sh /usr/bin/run_examples.sh /usr/bin/run_pytests.sh /usr/bin/fsl_imglob.py" \
-    \n    ], \
-    \n    [ \
-    \n      "run", \
-    \n      "mkdir /work && chown -R neuro /work" \
+    \n      "chown -R neuro /src/nipype\\n         && chmod +x /usr/bin/fsl_imglob.py /usr/bin/run_*.sh\\n         && . /etc/fsl/fsl.sh\\n         && ln -sf /usr/bin/fsl_imglob.py /bin/imglob\\n         && mkdir /work\\n         && chown neuro /work" \
     \n    ], \
     \n    [ \
     \n      "user", \
@@ -200,6 +206,14 @@ RUN echo '{ \
     \n      } \
     \n    ], \
     \n    [ \
+    \n      "run", \
+    \n      "mkdir -p /src/pybids\\n         && curl -sSL --retry 5 https://github.com/INCF/pybids/tarball/master\\n         | tar -xz -C /src/pybids --strip-components 1\\n         && pip install --no-cache-dir -e /src/pybids" \
+    \n    ], \
+    \n    [ \
+    \n      "workdir", \
+    \n      "/work" \
+    \n    ], \
+    \n    [ \
     \n      "label", \
     \n      { \
     \n        "org.label-schema.build-date": "$BUILD_DATE", \
@@ -213,6 +227,6 @@ RUN echo '{ \
     \n      } \
     \n    ] \
     \n  ], \
-    \n  "generation_timestamp": "2017-11-03 23:59:36", \
+    \n  "generation_timestamp": "2017-11-05 22:48:08", \
     \n  "neurodocker_version": "0.3.1-19-g8d02eb4" \
     \n}' > /neurodocker/neurodocker_specs.json

@@ -99,7 +99,12 @@ function generate_main_dockerfile() {
          docker/files/run_pytests.sh nipype/external/fsl_imglob.py /usr/bin/ \
   --copy . /src/nipype \
   --user root \
-  --run "chmod -R 777 /src/nipype && chmod +x /usr/bin/run_builddocs.sh /usr/bin/run_examples.sh /usr/bin/run_pytests.sh /usr/bin/fsl_imglob.py" \
+  --run "chown -R neuro /src/nipype
+         && chmod +x /usr/bin/fsl_imglob.py /usr/bin/run_*.sh
+         && . /etc/fsl/fsl.sh
+         && ln -sf /usr/bin/fsl_imglob.py ${FSLDIR}/bin/imglob
+         && mkdir /work
+         && chown neuro /work" \
   --user neuro \
   --arg PYTHON_VERSION_MAJOR=3 PYTHON_VERSION_MINOR=6 BUILD_DATE VCS_REF VERSION \
   --miniconda env_name=neuro \
@@ -108,6 +113,11 @@ function generate_main_dockerfile() {
                              pandas psutil scikit-learn scipy traits=4.6.0' \
               pip_opts="-e" \
               pip_install="/src/nipype[all]" \
+  --run "mkdir -p /src/pybids
+         && curl -sSL --retry 5 https://github.com/INCF/pybids/tarball/master
+         | tar -xz -C /src/pybids --strip-components 1
+         && pip install --no-cache-dir -e /src/pybids" \
+  --workdir /work \
   --label org.label-schema.build-date='$BUILD_DATE' \
           org.label-schema.name="NIPYPE" \
           org.label-schema.description="NIPYPE - Neuroimaging in Python: Pipelines and Interfaces" \
