@@ -107,6 +107,7 @@ jobs:
             WORKDIR: /home/circleci/work
           command: |
             mkdir -p "$WORKDIR"
+            chmod -R 777 "$WORKDIR"
             bash /home/circleci/nipype/.circleci/tests.sh
       - store_artifacts:
           path: /home/circleci/work/tests

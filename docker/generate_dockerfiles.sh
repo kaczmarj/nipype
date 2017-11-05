@@ -99,8 +99,7 @@ function generate_main_dockerfile() {
          docker/files/run_pytests.sh nipype/external/fsl_imglob.py /usr/bin/ \
   --copy . /src/nipype \
   --user root \
-  --run "chmod 777 -R /src/nipype && chmod +x /usr/bin/run_builddocs.sh /usr/bin/run_examples.sh /usr/bin/run_pytests.sh /usr/bin/fsl_imglob.py" \
-  --run "mkdir /work && chown -R neuro /work" \
+  --run "chmod -R 777 /src/nipype && chmod +x /usr/bin/run_builddocs.sh /usr/bin/run_examples.sh /usr/bin/run_pytests.sh /usr/bin/fsl_imglob.py" \
   --user neuro \
   --arg PYTHON_VERSION_MAJOR=3 PYTHON_VERSION_MINOR=6 BUILD_DATE VCS_REF VERSION \
   --miniconda env_name=neuro \
