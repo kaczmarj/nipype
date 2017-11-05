@@ -5,7 +5,7 @@
 # pull request on our GitHub repository:
 #     https://github.com/kaczmarj/neurodocker
 #
-# Timestamp: 2017-11-05 22:48:08
+# Timestamp: 2017-11-05 23:05:41
 
 FROM kaczmarj/nipype:base
 
@@ -70,7 +70,7 @@ COPY [".", "/src/nipype"]
 USER root
 
 # User-defined instruction
-RUN chown -R neuro /src/nipype \
+RUN chown -R neuro /src \
              && chmod +x /usr/bin/fsl_imglob.py /usr/bin/run_*.sh \
              && . /etc/fsl/fsl.sh \
              && ln -sf /usr/bin/fsl_imglob.py /bin/imglob \
@@ -180,7 +180,7 @@ RUN echo '{ \
     \n    ], \
     \n    [ \
     \n      "run", \
-    \n      "chown -R neuro /src/nipype\\n         && chmod +x /usr/bin/fsl_imglob.py /usr/bin/run_*.sh\\n         && . /etc/fsl/fsl.sh\\n         && ln -sf /usr/bin/fsl_imglob.py /bin/imglob\\n         && mkdir /work\\n         && chown neuro /work" \
+    \n      "chown -R neuro /src\\n         && chmod +x /usr/bin/fsl_imglob.py /usr/bin/run_*.sh\\n         && . /etc/fsl/fsl.sh\\n         && ln -sf /usr/bin/fsl_imglob.py /bin/imglob\\n         && mkdir /work\\n         && chown neuro /work" \
     \n    ], \
     \n    [ \
     \n      "user", \
@@ -227,6 +227,6 @@ RUN echo '{ \
     \n      } \
     \n    ] \
     \n  ], \
-    \n  "generation_timestamp": "2017-11-05 22:48:08", \
+    \n  "generation_timestamp": "2017-11-05 23:05:41", \
     \n  "neurodocker_version": "0.3.1-19-g8d02eb4" \
     \n}' > /neurodocker/neurodocker_specs.json

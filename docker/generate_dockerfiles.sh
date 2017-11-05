@@ -99,7 +99,7 @@ function generate_main_dockerfile() {
          docker/files/run_pytests.sh nipype/external/fsl_imglob.py /usr/bin/ \
   --copy . /src/nipype \
   --user root \
-  --run "chown -R neuro /src/nipype
+  --run "chown -R neuro /src
          && chmod +x /usr/bin/fsl_imglob.py /usr/bin/run_*.sh
          && . /etc/fsl/fsl.sh
          && ln -sf /usr/bin/fsl_imglob.py ${FSLDIR}/bin/imglob
