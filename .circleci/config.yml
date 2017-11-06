@@ -47,6 +47,10 @@ jobs:
       - attach_workspace:
           at: /tmp
       - run:
+          name: Get test dependencies
+          command: |
+            pip install --no-cache-dir --user codecov
+      - run:
           name: Modify Nipype version if necessary
           working_directory: /home/circleci/nipype
           command: |
