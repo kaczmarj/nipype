@@ -99,13 +99,12 @@ function generate_main_dockerfile() {
          docker/files/run_pytests.sh nipype/external/fsl_imglob.py /usr/bin/ \
   --copy . /src/nipype \
   --user root \
-  --run-bash "chown -R neuro /src
-         && chmod +x /usr/bin/fsl_imglob.py /usr/bin/run_*.sh
-         && source /etc/fsl/fsl.sh
-         && if [ -z $FSLDIR ]; then exit 1; fi
-         && ln -sf /usr/bin/fsl_imglob.py ${FSLDIR}/bin/imglob
-         && mkdir /work
-         && chown neuro /work" \
+  --run 'chown -R neuro /src
+&& chmod +x /usr/bin/fsl_imglob.py /usr/bin/run_*.sh
+&& . /etc/fsl/fsl.sh
+&& ln -sf /usr/bin/fsl_imglob.py ${FSLDIR}/bin/imglob
+&& mkdir /work
+&& chown neuro /work' \
   --user neuro \
   --arg PYTHON_VERSION_MAJOR=3 PYTHON_VERSION_MINOR=6 BUILD_DATE VCS_REF VERSION \
   --miniconda env_name=neuro \
