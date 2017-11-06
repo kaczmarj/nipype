@@ -61,7 +61,8 @@ jobs:
           name: Get base image (pull or build)
           no_output_timeout: 60m
           command: |
-            bash /tmp/docker/get_base_image.sh
+            # bash /tmp/docker/get_base_image.sh
+            docker pull kaczmarj/nipype:base
       - run:
           name: Build main image (py36)
           no_output_timeout: 60m
