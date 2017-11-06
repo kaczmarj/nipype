@@ -49,7 +49,7 @@ jobs:
       - run:
           name: Get test dependencies
           command: |
-            pip install --no-cache-dir --user codecov
+            pip install --no-cache-dir codecov
       - run:
           name: Modify Nipype version if necessary
           working_directory: /home/circleci/nipype
