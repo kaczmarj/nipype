@@ -5,7 +5,7 @@
 # pull request on our GitHub repository:
 #     https://github.com/kaczmarj/neurodocker
 #
-# Timestamp: 2017-11-05 23:05:41
+# Timestamp: 2017-11-06 14:27:11
 
 FROM kaczmarj/nipype:base
 
@@ -71,11 +71,11 @@ USER root
 
 # User-defined instruction
 RUN chown -R neuro /src \
-             && chmod +x /usr/bin/fsl_imglob.py /usr/bin/run_*.sh \
-             && . /etc/fsl/fsl.sh \
-             && ln -sf /usr/bin/fsl_imglob.py /bin/imglob \
-             && mkdir /work \
-             && chown neuro /work
+    && chmod +x /usr/bin/fsl_imglob.py /usr/bin/run_*.sh \
+    && . /etc/fsl/fsl.sh \
+    && ln -sf /usr/bin/fsl_imglob.py /bin/imglob \
+    && mkdir /work \
+    && chown neuro /work
 
 USER neuro
 
@@ -105,11 +105,12 @@ RUN conda install -y -q --name neuro python=${PYTHON_VERSION_MAJOR}.${PYTHON_VER
       && pip install -q --no-cache-dir -e /src/nipype[all]" \
     && sync
 
-# User-defined instruction
-RUN mkdir -p /src/pybids \
+# User-defined BASH instruction
+RUN bash -c "mkdir -p /src/pybids \
              && curl -sSL --retry 5 https://github.com/INCF/pybids/tarball/master \
              | tar -xz -C /src/pybids --strip-components 1 \
-             && pip install --no-cache-dir -e /src/pybids
+             && source activate neuro \
+             && pip install --no-cache-dir -e /src/pybids"
 
 WORKDIR /work
 
@@ -180,7 +181,7 @@ RUN echo '{ \
     \n    ], \
     \n    [ \
     \n      "run", \
-    \n      "chown -R neuro /src\\n         && chmod +x /usr/bin/fsl_imglob.py /usr/bin/run_*.sh\\n         && . /etc/fsl/fsl.sh\\n         && ln -sf /usr/bin/fsl_imglob.py /bin/imglob\\n         && mkdir /work\\n         && chown neuro /work" \
+    \n      "chown -R neuro /src\\n&& chmod +x /usr/bin/fsl_imglob.py /usr/bin/run_*.sh\\n&& . /etc/fsl/fsl.sh\\n&& ln -sf /usr/bin/fsl_imglob.py /bin/imglob\\n&& mkdir /work\\n&& chown neuro /work" \
     \n    ], \
     \n    [ \
     \n      "user", \
@@ -206,8 +207,8 @@ RUN echo '{ \
     \n      } \
     \n    ], \
     \n    [ \
-    \n      "run", \
-    \n      "mkdir -p /src/pybids\\n         && curl -sSL --retry 5 https://github.com/INCF/pybids/tarball/master\\n         | tar -xz -C /src/pybids --strip-components 1\\n         && pip install --no-cache-dir -e /src/pybids" \
+    \n      "run_bash", \
+    \n      "mkdir -p /src/pybids\\n         && curl -sSL --retry 5 https://github.com/INCF/pybids/tarball/master\\n         | tar -xz -C /src/pybids --strip-components 1\\n         && source activate neuro\\n         && pip install --no-cache-dir -e /src/pybids" \
     \n    ], \
     \n    [ \
     \n      "workdir", \
@@ -227,6 +228,6 @@ RUN echo '{ \
     \n      } \
     \n    ] \
     \n  ], \
-    \n  "generation_timestamp": "2017-11-05 23:05:41", \
+    \n  "generation_timestamp": "2017-11-06 14:27:11", \
     \n  "neurodocker_version": "0.3.1-19-g8d02eb4" \
     \n}' > /neurodocker/neurodocker_specs.json

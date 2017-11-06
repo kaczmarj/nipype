@@ -100,11 +100,11 @@ function generate_main_dockerfile() {
   --copy . /src/nipype \
   --user root \
   --run "chown -R neuro /src
-         && chmod +x /usr/bin/fsl_imglob.py /usr/bin/run_*.sh
-         && . /etc/fsl/fsl.sh
-         && ln -sf /usr/bin/fsl_imglob.py ${FSLDIR}/bin/imglob
-         && mkdir /work
-         && chown neuro /work" \
+&& chmod +x /usr/bin/fsl_imglob.py /usr/bin/run_*.sh
+&& . /etc/fsl/fsl.sh
+&& ln -sf /usr/bin/fsl_imglob.py ${FSLDIR}/bin/imglob
+&& mkdir /work
+&& chown neuro /work" \
   --user neuro \
   --arg PYTHON_VERSION_MAJOR=3 PYTHON_VERSION_MINOR=6 BUILD_DATE VCS_REF VERSION \
   --miniconda env_name=neuro \
@@ -113,9 +113,10 @@ function generate_main_dockerfile() {
                              pandas psutil scikit-learn scipy traits=4.6.0' \
               pip_opts="-e" \
               pip_install="/src/nipype[all]" \
-  --run "mkdir -p /src/pybids
+  --run-bash "mkdir -p /src/pybids
          && curl -sSL --retry 5 https://github.com/INCF/pybids/tarball/master
          | tar -xz -C /src/pybids --strip-components 1
+         && source activate neuro
          && pip install --no-cache-dir -e /src/pybids" \
   --workdir /work \
   --label org.label-schema.build-date='$BUILD_DATE' \
