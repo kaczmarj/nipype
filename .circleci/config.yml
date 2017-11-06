@@ -67,28 +67,32 @@ jobs:
           no_output_timeout: 60m
           working_directory: /home/circleci/nipype
           command: |
-            echo "$CIRCLE_TAG"
-            docker build \
-              --rm=false \
-              --tag kaczmarj/nipype:latest \
-              --tag kaczmarj/nipype:py36 \
-              --build-arg BUILD_DATE="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
-              --build-arg VCS_REF="$(git rev-parse --short HEAD)" \
-              --build-arg VERSION="${CIRCLE_TAG}" /home/circleci/nipype
+            e=1 && for i in {1..5}; do
+              docker build \
+                --rm=false \
+                --tag kaczmarj/nipype:latest \
+                --tag kaczmarj/nipype:py36 \
+                --build-arg BUILD_DATE="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+                --build-arg VCS_REF="$(git rev-parse --short HEAD)" \
+                --build-arg VERSION="${CIRCLE_TAG}" /home/circleci/nipype \
+              && e=0 && break || sleep 15
+            done && [ "$e" -eq "0" ]
       - run:
           name: Build main image (py27)
           no_output_timeout: 60m
           working_directory: /home/circleci/nipype
           command: |
-            echo "$CIRCLE_TAG"
-            docker build \
-              --rm=false \
-              --tag kaczmarj/nipype:py27 \
-              --build-arg PYTHON_VERSION_MAJOR=2 \
-              --build-arg PYTHON_VERSION_MINOR=7 \
-              --build-arg BUILD_DATE="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
-              --build-arg VCS_REF="$(git rev-parse --short HEAD)" \
-              --build-arg VERSION="${CIRCLE_TAG}-py27" /home/circleci/nipype
+            e=1 && for i in {1..5}; do
+              docker build \
+                --rm=false \
+                --tag kaczmarj/nipype:py27 \
+                --build-arg PYTHON_VERSION_MAJOR=2 \
+                --build-arg PYTHON_VERSION_MINOR=7 \
+                --build-arg BUILD_DATE="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+                --build-arg VCS_REF="$(git rev-parse --short HEAD)" \
+                --build-arg VERSION="${CIRCLE_TAG}-py27" /home/circleci/nipype \
+              && e=0 && break || sleep 15
+            done && [ "$e" -eq "0" ]
       - run:
           name: Download test data
           no_output_timeout: 20m
@@ -122,6 +126,7 @@ jobs:
             if [ "$CIRCLE_NODE_INDEX" -eq "0" ]; then
               echo "Saving Docker images to tar.gz files ..."
               docker save kaczmarj/nipype:latest kaczmarj/nipype:py36 | gzip > /tmp/docker/nipype-latest-py36.tar.gz
+              docker save kaczmarj/nipype:py27 | gzip > /tmp/docker/nipype-py27.tar.gz
             fi
       - persist_to_workspace:
           root: /tmp
@@ -131,7 +136,7 @@ jobs:
 
   deploy:
     docker:
-      - image: docker:17.06.2-ce-git
+      - image: docker:17.09.0-ce-git
     steps:
       - checkout
       - setup_remote_docker
@@ -142,13 +147,15 @@ jobs:
           no_output_timeout: 60m
           command: |
             docker load < /tmp/docker/nipype-latest-py36.tar.gz
+            docker load < /tmp/docker/nipype-py27.tar.gz
       - run:
           name: Push to DockerHub
           no_output_timeout: 60m
           command: |
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
             docker push kaczmarj/nipype:latest
             docker push kaczmarj/nipype:py36
+            docker push kaczmarj/nipype:py27
       - run:
           name: Prune base Dockerfile to update cache
           command: |
@@ -159,7 +166,6 @@ jobs:
           paths:
             - /tmp/docker/Dockerfile.base-pruned
           key: dftest-v4-{{ .Branch }}-{{ checksum "/tmp/docker/Dockerfile.base-pruned" }}
-          when: on_success
 
 
 workflows:
