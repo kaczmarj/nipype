@@ -150,11 +150,12 @@ jobs:
             docker load < /tmp/docker/nipype-py27.tar.gz
       - run:
           name: Push to DockerHub
-          no_output_timeout: 60m
+          no_output_timeout: 120m
           command: |
             docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
-            docker push kaczmarj/nipype:latest
+            docker push kaczmarj/nipype:base
             docker push kaczmarj/nipype:py36
+            docker push kaczmarj/nipype:latest
             docker push kaczmarj/nipype:py27
       - run:
           name: Prune base Dockerfile to update cache
