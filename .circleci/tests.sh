@@ -50,5 +50,9 @@ esac
 
 # Exit with error if any of the tests failed
 if [ "$exitcode" != "0" ]; then exit 1; fi
-codecov -f "coverage*.xml" -s "${WORKDIR}/tests/" -R "${HOME}/nipype/" -F unittests -e CIRCLE_NODE_INDEX
-codecov -f "smoketest*.xml" -s "${WORKDIR}/tests/" -R "${HOME}/nipype/" -F smoketests -e CIRCLE_NODE_INDEX
+
+codecov --file "${WORKDIR}/tests/coverage*.xml" \
+  --root "${HOME}/nipype/" --flags unittests -e CIRCLE_NODE_INDEX
+
+codecov --file "${WORKDIR}/tests/smoketest*.xml" \
+  --root "${HOME}/nipype/" --flags smoketests -e CIRCLE_NODE_INDEX
