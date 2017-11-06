@@ -44,6 +44,8 @@ case ${CIRCLE_NODE_INDEX} in
     ;;
 esac
 
+# CircleCI 2.0 does not have env var CIRCLE_TEST_REPORTS.
+# use store_artifacts instead.
 # cp ${WORKDIR}/tests/*.xml ${CIRCLE_TEST_REPORTS}/tests/
 
 # Exit with error if any of the tests failed
