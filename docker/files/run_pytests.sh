@@ -4,7 +4,7 @@ set -x
 set -u
 
 
-TESTPATH=${1:-/src/nipype/}
+TESTPATH=${1:-/src/nipype/nipype}
 WORKDIR=${WORK:-/work}
 PYTHON_VERSION=$( python -c "import sys; print('{}{}'.format(sys.version_info[0], sys.version_info[1]))" )
 
