@@ -22,7 +22,7 @@ jobs:
           name: Prune base Dockerfile to update cache
           working_directory: /home/circleci/nipype/docker
           command: |
-            mkdir -p /tmp/docker
+            mkdir -p /tmp/docker/cache
             # Use the sha256 sum of the pruned Dockerfile as the cache key.
             ash prune_dockerfile.sh Dockerfile.base > /tmp/docker/cache/Dockerfile.base-pruned
       - save_cache:
@@ -175,7 +175,7 @@ jobs:
           name: Prune base Dockerfile to update cache
           working_directory: /home/circleci/nipype/docker
           command: |
-            mkdir -p /tmp/docker
+            mkdir -p /tmp/docker/cache
             # Use the sha256 sum of the pruned Dockerfile as the cache key.
             ash prune_dockerfile.sh Dockerfile.base > /tmp/docker/cache/Dockerfile.base-pruned
       - save_cache:
