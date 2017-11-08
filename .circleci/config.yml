@@ -190,7 +190,7 @@ jobs:
       - save_cache:
           paths:
             - /tmp/docker/cache/Dockerfile.base-pruned
-          key: dftest-v5-{{ .Branch }}-{{ checksum "/tmp/docker/Dockerfile.base-pruned" }}
+          key: dftest-v5-{{ .Branch }}-{{ checksum "/tmp/docker/cache/Dockerfile.base-pruned" }}
 
 
 workflows:
@@ -205,6 +205,6 @@ workflows:
           filters:
             branches:
               # TODO: change this to master after we are sure this works.
-              only: enh/circleci-neurodocker
+              only: enh/circleci-neurodocker-test
           requires:
             - build_and_test
