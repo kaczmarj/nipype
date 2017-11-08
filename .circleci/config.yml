@@ -145,7 +145,7 @@ jobs:
           name: Save Docker images to workspace
           no_output_timeout: 60m
           command: |
-            if [ "$CIRCLE_NODE_INDEX" -eq "0" ]; then
+            if [ "$CIRCLE_NODE_INDEX" -eq "0" ] && [ "$CIRCLE_BRANCH" == "enh/circleci-neurodocker-test"]; then
               docker save kaczmarj/nipype:base \
                           kaczmarj/nipype:latest \
                           kaczmarj/nipype:py36 \
