@@ -3,7 +3,7 @@ jobs:
 
   compare_base_dockerfiles:
     docker:
-      - image: docker:17.09.0-ce-git
+      - image: docker:17.10.0-ce-git
     steps:
       - checkout:
           path: /home/circleci/nipype
@@ -39,8 +39,8 @@ jobs:
   build_and_test:
     parallelism: 4
     machine:
-      # Ubuntu 14.04 with Docker 17.03.0-ce
-      image: circleci/classic:201703-01
+      # Ubuntu 14.04 with Docker 17.10.0-ce
+      image: circleci/classic:201710-02
     steps:
       - checkout:
           path: /home/circleci/nipype
@@ -60,10 +60,8 @@ jobs:
       - run:
           name: Get base image (pull or build)
           no_output_timeout: 60m
-          # TODO: remove `docker pull` once once caching works.
           command: |
-            # bash /tmp/docker/get_base_image.sh
-            docker pull kaczmarj/nipype:base
+            bash /tmp/docker/get_base_image.sh
       - run:
           name: Build main image (py36)
           no_output_timeout: 60m
@@ -139,7 +137,7 @@ jobs:
 
   deploy:
     docker:
-      - image: docker:17.09.0-ce-git
+      - image: docker:17.10.0-ce-git
     steps:
       - checkout:
           path: /home/circleci/nipype
