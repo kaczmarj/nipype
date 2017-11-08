@@ -17,19 +17,6 @@ jobs:
       - restore_cache:
           # TODO: change this to 'master' after we are sure this works.
           key: dftest-v5-enh/circleci-neurodocker-{{ checksum "/tmp/docker/Dockerfile.base-pruned" }}
-
-      - run:
-          name: Prune base Dockerfile to update cache
-          working_directory: /home/circleci/nipype/docker
-          command: |
-            mkdir -p /tmp/docker/cache
-            # Use the sha256 sum of the pruned Dockerfile as the cache key.
-            ash prune_dockerfile.sh Dockerfile.base > /tmp/docker/cache/Dockerfile.base-pruned
-      - save_cache:
-          paths:
-            - /tmp/docker/cache/Dockerfile.base-pruned
-          key: dftest-v5-{{ .Branch }}-{{ checksum "/tmp/docker/Dockerfile.base-pruned" }}
-
       - run:
           name: Determine how to get base image
           command: |
