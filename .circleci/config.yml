@@ -17,13 +17,26 @@ jobs:
       - restore_cache:
           # TODO: change this to 'master' after we are sure this works.
           key: dftest-v5-enh/circleci-neurodocker-{{ checksum "/tmp/docker/Dockerfile.base-pruned" }}
+
+      - run:
+          name: Prune base Dockerfile to update cache
+          working_directory: /home/circleci/nipype/docker
+          command: |
+            mkdir -p /tmp/docker
+            # Use the sha256 sum of the pruned Dockerfile as the cache key.
+            ash prune_dockerfile.sh Dockerfile.base > /tmp/docker/cache/Dockerfile.base-pruned
+      - save_cache:
+          paths:
+            - /tmp/docker/cache/Dockerfile.base-pruned
+          key: dftest-v5-{{ .Branch }}-{{ checksum "/tmp/docker/Dockerfile.base-pruned" }}
+
       - run:
           name: Determine how to get base image
           command: |
-            GET_BASE="/tmp/docker/get_base_image.sh"
+            BASE_DF_METHOD="/tmp/docker/get_base_image.sh"
 
-            # This directory comes from the cache.
-            if [ -d /cache/base-dockerfile ]; then
+            # This directory only exists if a cache was found.
+            if [ -d /tmp/docker/cache ]; then
               echo "echo Pulling base image ..." > "$GET_BASE"
               echo "docker pull kaczmarj/nipype:base" >> "$GET_BASE"
             else
@@ -164,10 +177,10 @@ jobs:
           command: |
             mkdir -p /tmp/docker
             # Use the sha256 sum of the pruned Dockerfile as the cache key.
-            ash prune_dockerfile.sh Dockerfile.base > /tmp/docker/Dockerfile.base-pruned
+            ash prune_dockerfile.sh Dockerfile.base > /tmp/docker/cache/Dockerfile.base-pruned
       - save_cache:
           paths:
-            - /tmp/docker/Dockerfile.base-pruned
+            - /tmp/docker/cache/Dockerfile.base-pruned
           key: dftest-v5-{{ .Branch }}-{{ checksum "/tmp/docker/Dockerfile.base-pruned" }}
 
 
