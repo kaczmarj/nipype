@@ -112,6 +112,7 @@ function generate_main_dockerfile() {
          && source activate neuro
          && pip install --no-cache-dir -e /src/pybids" \
   --workdir /work \
+  --workdir /work \
   --label org.label-schema.build-date='$BUILD_DATE' \
           org.label-schema.name="NIPYPE" \
           org.label-schema.description="NIPYPE - Neuroimaging in Python: Pipelines and Interfaces" \
