@@ -33,13 +33,15 @@ jobs:
       - run:
           name: Determine how to get base image
           command: |
-            BASE_DF_METHOD="/tmp/docker/get_base_image.sh"
+            GET_BASE="/tmp/docker/get_base_image.sh"
 
             # This directory only exists if a cache was found.
-            if [ -d /tmp/docker/cache ]; then
+            if [ -f /tmp/docker/cache/Dockerfile.base-pruned ]; then
+              echo "Cached Dockerfile found."
               echo "echo Pulling base image ..." > "$GET_BASE"
               echo "docker pull kaczmarj/nipype:base" >> "$GET_BASE"
             else
+              echo "Cached Dockerfile found."
               echo "echo Building base image ..." > "$GET_BASE"
               echo "docker build -t kaczmarj/nipype:base - < /home/circleci/nipype/docker/Dockerfile.base" >> "$GET_BASE"
             fi
