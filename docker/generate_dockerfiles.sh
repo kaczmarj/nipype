@@ -76,6 +76,7 @@ function generate_base_dockerfile() {
   --add-to-entrypoint "source /etc/fsl/fsl.sh" \
   --env ANTSPATH='/usr/lib/ants' PATH='/usr/lib/ants:$PATH' \
   --run "gem install fakes3" \
+  --workdir "/" \
   --no-check-urls > "$DIR/Dockerfile.base"
 }
 
@@ -111,7 +112,6 @@ function generate_main_dockerfile() {
          | tar -xz -C /src/pybids --strip-components 1
          && source activate neuro
          && pip install --no-cache-dir -e /src/pybids" \
-  --workdir /work \
   --workdir /work \
   --label org.label-schema.build-date='$BUILD_DATE' \
           org.label-schema.name="NIPYPE" \
