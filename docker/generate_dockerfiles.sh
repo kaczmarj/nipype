@@ -76,7 +76,6 @@ function generate_base_dockerfile() {
   --add-to-entrypoint "source /etc/fsl/fsl.sh" \
   --env ANTSPATH='/usr/lib/ants' PATH='/usr/lib/ants:$PATH' \
   --run "gem install fakes3" \
-  --workdir "/" \
   --no-check-urls > "$DIR/Dockerfile.base"
 }
 

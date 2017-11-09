@@ -5,7 +5,7 @@
 # pull request on our GitHub repository:
 #     https://github.com/kaczmarj/neurodocker
 #
-# Timestamp: 2017-11-08 16:35:28
+# Timestamp: 2017-11-09 16:05:04
 
 FROM neurodebian@sha256:7590552afd0e7a481a33314724ae27f76ccedd05ffd7ac06ec38638872427b9b
 
@@ -130,8 +130,6 @@ ENV ANTSPATH="/usr/lib/ants" \
 # User-defined instruction
 RUN gem install fakes3
 
-WORKDIR /
-
 #--------------------------------------
 # Save container specifications to JSON
 #--------------------------------------
@@ -210,12 +208,8 @@ RUN echo '{ \
     \n    [ \
     \n      "run", \
     \n      "gem install fakes3" \
-    \n    ], \
-    \n    [ \
-    \n      "workdir", \
-    \n      "/" \
     \n    ] \
     \n  ], \
-    \n  "generation_timestamp": "2017-11-08 16:35:28", \
+    \n  "generation_timestamp": "2017-11-09 16:05:04", \
     \n  "neurodocker_version": "0.3.1-19-g8d02eb4" \
     \n}' > /neurodocker/neurodocker_specs.json
