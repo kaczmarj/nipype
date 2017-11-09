@@ -16,7 +16,7 @@ jobs:
             ash prune_dockerfile.sh Dockerfile.base > /tmp/docker/Dockerfile.base-pruned
       - restore_cache:
           # TODO: change this to 'master' after we are sure this works.
-          key: dftest-v5-enh/circleci-neurodocker-{{ checksum "/tmp/docker/Dockerfile.base-pruned" }}
+          key: dftest-v5-enh/circleci-neurodocker-test-{{ checksum "/tmp/docker/Dockerfile.base-pruned" }}
       - run:
           name: Determine how to get base image
           command: |
