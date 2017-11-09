@@ -136,7 +136,7 @@ jobs:
               docker save kaczmarj/nipype:base \
                           kaczmarj/nipype:latest \
                           kaczmarj/nipype:py36 \
-                          kaczmarj/nipype:py27 > /tmp/docker/nipype-base-latest-py36-py27.tar
+                          kaczmarj/nipype:py27 | gzip -1 > /tmp/docker/nipype-base-latest-py36-py27.tar.gz
             fi
       - persist_to_workspace:
           root: /tmp
@@ -157,7 +157,7 @@ jobs:
           name: Load saved Docker images.
           no_output_timeout: 60m
           command: |
-            docker load < /tmp/docker/nipype-base-latest-py36-py27.tar
+            docker load < /tmp/docker/nipype-base-latest-py36-py27.tar.gz
       - run:
           name: Push to DockerHub
           no_output_timeout: 120m
