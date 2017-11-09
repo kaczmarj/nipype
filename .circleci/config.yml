@@ -137,6 +137,7 @@ jobs:
                           kaczmarj/nipype:latest \
                           kaczmarj/nipype:py36 \
                           kaczmarj/nipype:py27 | gzip -1 > /tmp/docker/nipype-base-latest-py36-py27.tar.gz
+              du -h /tmp/docker/nipype-base-latest-py36-py27.tar.gz
             fi
       - persist_to_workspace:
           root: /tmp
