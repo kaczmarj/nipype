@@ -124,8 +124,7 @@ jobs:
           command: |
             mkdir -p "$WORKDIR"
             chmod -R 777 "$WORKDIR"
-            echo "not running tests now"
-            # bash /home/circleci/nipype/.circleci/tests.sh
+            bash /home/circleci/nipype/.circleci/tests.sh
       - store_artifacts:
           path: /home/circleci/work/tests
       - run:
@@ -140,7 +139,7 @@ jobs:
               du -h /tmp/docker/nipype-base-latest-py36-py27.tar.gz
             else
               # Workaround for `persist_to_workspace` to succeed when we are
-              # not deploying.
+              # not deploying Docker images.
               touch /tmp/docker/nipype-base-latest-py36-py27.tar.gz
             fi
       - persist_to_workspace:
