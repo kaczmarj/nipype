@@ -193,6 +193,6 @@ workflows:
           filters:
             branches:
               # TODO: change this to master after we are sure this works.
-              only: enh/circleci-neurodocker-test
+              only: enh/circleci-neurodocker
           requires:
             - build_and_test
